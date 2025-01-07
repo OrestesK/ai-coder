@@ -9,16 +9,22 @@ export default function CodeEditorPage() {
   const [language, setLanguage] = useState("javascript");
   const [code, setCode] = useState("// Write your code here...");
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const languages = ["javascript", "typescript"];
 
   const getFeedback = async () => {
-    const response = await axios.post("/api/feedback", { code_snippet: code });
-    setFeedback(response.data.feedback);
+    setLoading(true);
+    setFeedback(null);
+    const response = await axios.post("/api/feedback", {
+      code: code,
+      language: language,
+    });
+    setFeedback(response.data);
+    setLoading(false);
   };
 
   const monaco = useMonaco();
-
   useEffect(() => {
     if (monaco) {
       monaco.editor.defineTheme("myCustomTheme", {
@@ -87,12 +93,19 @@ export default function CodeEditorPage() {
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
             onClick={getFeedback}
           >
-            Get Feedback
+            {loading ? "Getting Feedback..." : "Get Feedback"}
           </button>
         </div>
         <div className="flex-1 bg-white shadow-md rounded p-4">
           <h2 className="text-xl font-semibold">Feedback</h2>
-          <p className="mt-2">{feedback || "No feedback yet"}</p>
+          {loading && (
+            <p className="mt-2 text-gray-500">Generating feedback...</p>
+          )}
+          {!loading && (
+            <pre className="mt-2 whitespace-pre-wrap text-gray-800">
+              {feedback || "No feedback yet"}
+            </pre>
+          )}
         </div>
       </div>
     </div>

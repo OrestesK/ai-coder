@@ -1,0 +1,13 @@
+python-dotenv
+fastapi
+uvicorn
+numpy
+cuid
+langchain
+langchain-core
+langchain-community
+langchain-openai
+langchain-postgres
+langgraph
+psycopg2
+# llm-guard
